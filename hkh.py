@@ -1,28 +1,70 @@
+from flask import Flask, render_template, request
 import requests
-#pakhaji
+import json
+#hkh
 
-def test_http_methods(url):
-    methods = {
-        "GET": requests.get,
-        "POST": requests.post,
-        "PUT": requests.put,
-        "DELETE": requests.delete,
-        "PATCH": requests.patch,
-        "OPTIONS": requests.options,
-        "HEAD": requests.head
-    }
+app = Flask(__name__)
 
-    for method_name, method_func in methods.items():
+HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    results = []
+    if request.method == "POST":
+        url = request.form.get("url")
+        raw_headers = request.form.get("headers", "")
+        body = request.form.get("body", "")
+        auth_type = request.form.get("auth_type")
+        username = request.form.get("username")
+        password = request.form.get("password")
+        token = request.form.get("token")
+
+        # Parse headers
+        headers = {}
+        for line in raw_headers.strip().splitlines():
+            if ":" in line:
+                key, value = line.split(":", 1)
+                headers[key.strip()] = value.strip()
+
+        # Handle Auth
+        auth = None
+        if auth_type == "basic" and username and password:
+            auth = (username, password)
+        elif auth_type == "bearer" and token:
+            headers["Authorization"] = f"Bearer {token}"
+
+        # Try JSON body
         try:
-            print(f"\nTesting {method_name} method to {url}")
-            response = method_func(url)
-            print(f"Status Code: {response.status_code}")
-            print(f"Allowed? {'Yes' if response.status_code < 400 else 'No'}")
-            if method_name != "HEAD":
-                print(f"Response Body:\n{response.text[:200]}...")  # Preview first 200 chars
-        except Exception as e:
-            print(f"Error during {method_name}: {e}")
+            json_body = json.loads(body) if body else None
+        except:
+            json_body = None
+
+        # Test each method
+        for method in HTTP_METHODS:
+            try:
+                if method in ["POST", "PUT", "PATCH"]:
+                    res = requests.request(method, url, headers=headers, auth=auth,
+                                           json=json_body if isinstance(json_body, dict) else None,
+                                           data=body if not json_body else None)
+                else:
+                    res = requests.request(method, url, headers=headers, auth=auth)
+
+                results.append({
+                    "method": method,
+                    "status_code": res.status_code,
+                    "allowed": res.status_code < 400,
+                    "response": res.text[:300]
+                })
+            except Exception as e:
+                results.append({
+                    "method": method,
+                    "status_code": "ERROR",
+                    "allowed": False,
+                    "response": str(e)
+                })
+
+    return render_template("index.html", results=results)
+
 
 if __name__ == "__main__":
-    target_url = input("Enter target URL (e.g., https://example.com/api): ")
-    test_http_methods(target_url)
+    app.run(debug=True)
