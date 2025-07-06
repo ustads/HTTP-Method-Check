@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTTP Method Tester</title>
+    <style>
+        body { font-family: Arial; margin: 30px; }
+        input, textarea, select { width: 100%; margin-bottom: 10px; padding: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; }
+        th { background: #f0f0f0; }
+        .ok { color: green; }
+        .fail { color: red; }
+    </style>
+</head>
+<body>
+    <h2>HTTP Method Tester</h2>
+    <form method="post">
+        <label>Target URL:</label>
+        <input name="url" placeholder="https://example.com/api" required>
+
+        <label>Headers (one per line, e.g., Key: Value):</label>
+        <textarea name="headers" rows="5" placeholder="hkh: custom-header"></textarea>
+
+        <label>Body (JSON or raw):</label>
+        <textarea name="body" rows="5" placeholder='{"key": "value"}'></textarea>
+
+        <label>Authentication:</label>
+        <select name="auth_type">
+            <option value="">None</option>
+            <option value="basic">Basic Auth</option>
+            <option value="bearer">Bearer Token</option>
+        </select>
+
+        <label>Username (for Basic Auth):</label>
+        <input name="username">
+
+        <label>Password (for Basic Auth):</label>
+        <input name="password" type="password">
+
+        <label>Bearer Token:</label>
+        <input name="token">
+
+        <button type="submit">Test Methods</button>
+    </form>
+
+    {% if results %}
+        <h3>Results:</h3>
+        <table>
+            <tr>
+                <th>Method</th>
+                <th>Status Code</th>
+                <th>Allowed</th>
+                <th>Response Snippet</th>
+            </tr>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.method }}</td>
+                <td>{{ r.status_code }}</td>
+                <td class="{{ 'ok' if r.allowed else 'fail' }}">{{ 'Yes' if r.allowed else 'No' }}</td>
+                <td><pre>{{ r.response }}</pre></td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
