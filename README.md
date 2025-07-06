@@ -2,11 +2,10 @@
 Berikut adalah script Python sederhana untuk menguji berbagai HTTP method (GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD) ke suatu URL menggunakan library requests:
 
 🔧 How to run:
-
-Buat folder templates/ dan simpan file ini sebagai index.html
-pip install flask requests
-python app.py
-Buka browser ke: http://localhost:5000
+1. Buat folder templates/ dan simpan file ini sebagai index.html
+2. pip install flask requests
+3. python app.py
+4. Buka browser ke: http://localhost:5000
 
 ⚠️ Note:
 
