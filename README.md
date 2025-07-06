@@ -3,13 +3,10 @@ Berikut adalah script Python sederhana untuk menguji berbagai HTTP method (GET, 
 
 🔧 How to run:
 
-    1. Simpan script di file bernama http_method_tester.py.
-
-    2. Jalankan dengan Python:
-
-    3. python http_method_tester.py
-
-    4. Masukkan URL target ketika diminta.
+Buat folder templates/ dan simpan file ini sebagai index.html
+pip install flask requests
+python app.py
+Buka browser ke: http://localhost:5000
 
 ⚠️ Note:
 
